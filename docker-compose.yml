@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+    link:
+        image: basip/link:latest
+        container_name: link
+        restart: always
+        ports:
+            - "80:80"
+            - "6001:6001"
+        volumes:
+            - mysql-data:/var/lib/mysql
+            - mysql-log:/var/log/mysql
+            - nginx-log:/var/log/nginx
+            - storage-log:/share/storage
+            - supervisor-log:/supervisor-logs
+volumes:
+  mysql-data:
+  mysql-log:
+  nginx-log:
+  storage-log:
+  supervisor-log:
