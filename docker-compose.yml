@@ -9,14 +9,10 @@ services:
             - "80:80"
             - "6001:6001"
         volumes:
-            - mysql-data:/var/lib/mysql
-            - mysql-log:/var/log/mysql
-            - nginx-log:/var/log/nginx
-            - storage-log:/share/storage
-            - supervisor-log:/supervisor-logs
+            - app-data:/var/lib/mysql
+            - system-logs:/var/log
+            - app-storage:/share/storage
 volumes:
-  mysql-data:
-  mysql-log:
-  nginx-log:
-  storage-log:
-  supervisor-log:
+  app-data:
+  system-logs:
+  app-storage:
