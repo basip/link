@@ -1,0 +1,51 @@
+version: '3'
+services:
+  proxy:
+    image: nginx
+    restart: always
+    container_name: link_proxy
+    volumes:
+      - ./link-nginx/ssl-certs/fullchain.pem:/etc/letsencrypt/live/link/fullchain.pem
+      - ./link-nginx/ssl-certs/privkey.pem:/etc/letsencrypt/live/link/privkey.pem
+      - ./link-nginx/link-nginx.template:/etc/nginx/conf.d/default.template
+    ports:
+      - "80:80"
+      - "6001:6001"
+      - "443:443"
+    links:
+      - app
+    environment:
+      - NGINX_HOST=${HOST}
+    networks:
+      - link
+    command: /bin/bash -c "envsubst '\$${NGINX_HOST}'< /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+  app:
+    image: ${LINK_IMAGE}
+    restart: always
+    container_name: link
+    ports:
+      - "5060:5060/udp"
+      - "5060:5060/tcp"
+      - "5066:5066/tcp"
+      - "5080:5080/tcp"
+      - "5080:5080/udp"
+      - "7443:7443/tcp"
+      - "8021:8021/tcp"
+      - "64535-65535:64535-65535/udp"
+    volumes:
+      - "link_app-data:/var/lib/mysql"
+      - "link_system-logs:/var/log"
+      - "link_app-storage:/share-storage"
+    networks:
+      - link
+
+volumes:
+  link_app-data:
+    external: true
+  link_app-storage:
+    external: true
+  link_system-logs:
+    external: true
+
+networks:
+  link:
