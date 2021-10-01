@@ -1,0 +1,217 @@
+version: '3.2'
+services:
+  https-portal:
+    image: steveltn/https-portal:1
+    container_name: link-web-proxy
+    ports:
+      - '80:80'
+      - '443:443'
+    restart: always
+    environment:
+      STAGE: $HTTPS_MODE
+      PROXY_READ_TIMEOUT: 3600
+      DOMAINS: '$HTTPS_DOMAIN -> http://app:8000'
+      CLIENT_MAX_BODY_SIZE: '500M'
+      WEBSOCKET: 'true'
+      CUSTOM_NGINX_SERVER_CONFIG_BLOCK: |
+        location /app {
+        proxy_pass http://app:6001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        }
+    volumes:
+      - app-ssl-certs:/var/lib/https-portal
+    networks:
+      - default
+      - link-internal
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+  autoheal:
+    restart: always
+    container_name: link-autoheal
+    image: willfarrell/autoheal
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  app:
+    image: basip/link-app
+    container_name: link-app
+    restart: always
+    ports:
+      - '8000:8000/tcp'
+      - '6001:6001/tcp'
+    depends_on:
+      - autoheal
+      - redis
+      - nats
+      - db
+    networks:
+      - link-internal
+      - default
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    volumes:
+      - app-storage:/share/storage
+      - system-logs:/var/log
+  redis:
+    image: redis:6.2.4-alpine3.13
+    container_name: link-redis
+    restart: always
+    ports:
+      - 6379:6379/tcp
+    networks:
+      - link-internal
+    depends_on:
+      - autoheal
+    healthcheck:
+      test: redis-cli -e PING || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+  nats:
+    image: nats:2.2.6-alpine3.13
+    container_name: link-nats
+    restart: always
+    ports:
+      - 4222:4222/tcp
+      - 6222:6222/tcp
+      - 8222:8222/tcp
+    networks:
+      - link-internal
+    depends_on:
+      - autoheal
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+  db:
+    image: mysql:5.7.34
+    container_name: link-db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=puYJABqaMoXyqtJinhn6xzZb
+      - MYSQL_DATABASE=basip_link
+      - "character-set-server=utf8mb4"
+      - "collation-server=utf8mb4_unicode_ci"
+    depends_on:
+      - autoheal
+    healthcheck:
+      test: mysql --user=root --password=puYJABqaMoXyqtJinhn6xzZb --database=basip_link --execute="select 1;" || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - app-data:/var/lib/mysql
+    ports:
+      - 3306:3306/tcp
+    networks:
+      - link-internal
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+  face-app:
+    image: basip/link-face-app:latest
+    container_name: link-face-app
+    restart: always
+    ports:
+      - 8089:80/tcp
+    networks:
+      - link-internal
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+  sip-proxy:
+    image: basip/link-sip-proxy
+    container_name: sip-proxy-app
+    network_mode: host
+    depends_on:
+      - db
+      - autoheal
+    environment:
+      - LISTEN_PORT=48080
+      - DB_USER=root
+      - DB_PASSWORD=2TeEcbpdTXx2HrGVHgji3iqJ
+      - DB_HOST=127.0.0.1
+      - DB_PORT=43306
+      - DB_NAME=kamailio
+      - KAMAILIO_CONFIG_PATH=/usr/local/etc/kamailio
+      - APP_ASSETS_PATH=/root/control-service/assets
+    volumes:
+      - sip-proxy-app:/root/control-service/assets
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+  sip-node:
+    image: basip/link-sip-node
+    container_name: sip-node-app
+    network_mode: host
+    restart: always
+    environment:
+      - LISTEN_PORT=48081
+      - ASTERISK_CONFIG_PATH=/etc/asterisk
+      - ARI_CONFIG_PATH=/usr/local/etc/asterisk-ari-service
+      - APP_ASSETS_PATH=/root/control-service/assets
+    volumes:
+      - sip-node-app:/root/control-service/assets
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+  sip-proxy-db:
+    image: mysql:5.7.34
+    container_name: sip-proxy-db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=2TeEcbpdTXx2HrGVHgji3iqJ
+      - MYSQL_DATABASE=kamailio
+      - "character-set-server=utf8mb4"
+      - "collation-server=utf8mb4_unicode_ci"
+    depends_on:
+      - autoheal
+    healthcheck:
+      test: mysql --user=root --password=2TeEcbpdTXx2HrGVHgji3iqJ --database=kamailio --execute="select 1;" || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - sip-proxy-data:/var/lib/mysql
+    ports:
+      - "43306:3306/tcp"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+networks:
+  link-internal:
+    internal: true
+
+volumes:
+  app-data: { external: true }
+  system-logs: { external: true }
+  app-storage: { external: true }
+  app-ssl-certs: { external: true }
+  sip-proxy-data: { }
+  sip-proxy-app: { }
+  sip-node-app: { }
