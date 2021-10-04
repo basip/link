@@ -120,6 +120,3 @@ volumes:
   app-data: { external: true }
   system-logs: { external: true }
   app-storage: { external: true }
-  sip-proxy-data: { }
-  sip-proxy-app: { }
-  sip-node-app: { }
