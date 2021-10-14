@@ -13,15 +13,13 @@ services:
       DOMAINS: '$HTTPS_DOMAIN -> http://app:8000'
       CLIENT_MAX_BODY_SIZE: '500M'
       WEBSOCKET: 'true'
-      CUSTOM_NGINX_SERVER_CONFIG_BLOCK: |
-        location /app {
-        proxy_pass http://app:6001;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        }
+      WORKER_PROCESSES: 4
+      WORKER_CONNECTIONS: 8192
     volumes:
       - app-ssl-certs:/var/lib/https-portal
+      - ./web.conf/default.conf.erb:/var/lib/nginx-conf/$HTTPS_DOMAIN.conf.erb
+      - ./web.conf/default.ssl.conf.erb:/var/lib/nginx-conf/$HTTPS_DOMAIN.ssl.conf.erb
+      - ./web.conf/nginx.conf.erb:/var/lib/nginx-conf/nginx.conf.erb
     networks:
       - default
       - link-internal
@@ -42,6 +40,8 @@ services:
     image: basip/link-app
     container_name: link-app
     restart: always
+    environment:
+      - SIP_ENABLED=true
     ports:
       - "8000:8000/tcp"
       - "6001:6001/tcp"
@@ -143,7 +143,7 @@ services:
     container_name: sip-proxy-app
     network_mode: host
     depends_on:
-      - db
+      - sip-proxy-db
       - autoheal
     environment:
       - LISTEN_PORT=48080
@@ -156,6 +156,7 @@ services:
       - APP_ASSETS_PATH=/root/control-service/assets
     volumes:
       - sip-proxy-app:/root/control-service/assets
+      - sip-proxy-log:/var/log
     logging:
       driver: json-file
       options:
@@ -215,3 +216,4 @@ volumes:
   sip-proxy-data: { }
   sip-proxy-app: { }
   sip-node-app: { }
+  sip-proxy-log: {}

@@ -1,0 +1,13 @@
+server {
+    listen       80;
+    <% if ENV['LISTEN_IPV6'] && ENV['LISTEN_IPV6'].downcase == 'true' %>
+    listen       [::]:80;
+    <% end %>
+    server_name  <%= domain.name %>;
+
+    location / {
+      return    307 https://$server_name$request_uri;
+    }
+
+    <%= acme_challenge_location %>
+}
