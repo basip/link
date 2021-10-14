@@ -12,6 +12,8 @@ services:
     image: basip/link-app
     container_name: link-app
     restart: always
+    environment:
+      - SIP_ENABLED=true
     ports:
       - '80:8000/tcp'
       - '6001:6001/tcp'
@@ -113,7 +115,7 @@ services:
     container_name: sip-proxy-app
     network_mode: host
     depends_on:
-      - db
+      - sip-proxy-db
       - autoheal
     environment:
       - LISTEN_PORT=48080
@@ -126,6 +128,7 @@ services:
       - APP_ASSETS_PATH=/root/control-service/assets
     volumes:
       - sip-proxy-app:/root/control-service/assets
+      - sip-proxy-log:/var/log
     logging:
       driver: json-file
       options:
@@ -184,3 +187,4 @@ volumes:
   sip-proxy-data: {}
   sip-node-app: {}
   sip-proxy-app: {}
+  sip-proxy-log: {}
