@@ -12,8 +12,6 @@ services:
     image: basip/link-app
     container_name: link-app
     restart: always
-    environment:
-      - SIP_ENABLED=true
     ports:
       - '80:8000/tcp'
       - '6001:6001/tcp'
