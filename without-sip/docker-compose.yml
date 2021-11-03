@@ -1,4 +1,4 @@
-version: '3.2'
+version: "3.2"
 services:
   autoheal:
     restart: always
@@ -16,7 +16,6 @@ services:
       - "80:8000/tcp"
       - "6001:6001/tcp"
     depends_on:
-      - autoheal
       - redis
       - nats
       - db
@@ -61,8 +60,6 @@ services:
       - "8222:8222/tcp"
     networks:
       - link-internal
-    depends_on:
-      - autoheal
     logging:
       driver: json-file
       options:
@@ -75,14 +72,6 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=Qwerty12345
       - MYSQL_DATABASE=basip_link
-    depends_on:
-      - autoheal
-    healthcheck:
-      test: mysql --user=root --password=Qwerty12345 --database=basip_link --execute="select 1;" || exit 1
-      interval: 1m
-      timeout: 10s
-      retries: 3
-      start_period: 1m
     volumes:
       - app-data:/var/lib/mysql
     ports:
@@ -94,7 +83,7 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci', '--innodb-buffer-pool-size=2G', '--innodb-log-file-size=256M']
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--innodb-buffer-pool-size=2G", "--innodb-log-file-size=256M"]
   face-app:
     image: basip/link-face-app:latest
     container_name: link-face-app
