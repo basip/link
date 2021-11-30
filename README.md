@@ -13,3 +13,7 @@ For Link manuals please visit [our wiki](https://wiki.bas-ip.com/basiplink/ru/ba
 ## Upgrade Link v1.1.x to v1.2.x
 
 Please check [manual](./upgrade-link-v1.1.x)
+
+## Upgrade Link v1.2.8 to v1.2.9
+
+Please check [manual](./upgrade-link-v1.2.8-v1.2.9)
