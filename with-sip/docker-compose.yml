@@ -112,6 +112,7 @@ services:
       - DB_NAME=kamailio
       - KAMAILIO_CONFIG_PATH=/usr/local/etc/kamailio
       - APP_ASSETS_PATH=/root/control-service/assets
+      - ARI_CONFIG_PATH=/usr/local/etc/ari-service      
     volumes:
       - sip-proxy-app:/root/control-service/assets
       - sip-proxy-log:/var/log
@@ -128,7 +129,6 @@ services:
     environment:
       - LISTEN_PORT=48081
       - ASTERISK_CONFIG_PATH=/etc/asterisk
-      - ARI_CONFIG_PATH=/usr/local/etc/asterisk-ari-service
       - APP_ASSETS_PATH=/root/control-service/assets
     volumes:
       - sip-node-app:/root/control-service/assets
