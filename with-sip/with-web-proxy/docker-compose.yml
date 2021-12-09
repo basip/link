@@ -128,6 +128,7 @@ services:
   sip-proxy:
     image: basip/link-sip-proxy
     container_name: sip-proxy-app
+    restart: always
     network_mode: host
     depends_on:
       - sip-proxy-db
