@@ -17,3 +17,7 @@ Please check [manual](./upgrade-link-v1.1.x)
 ## Upgrade Link v1.2.8 to v1.2.9
 
 Please check [manual](./upgrade-link-v1.2.8-v1.2.9)
+
+## Upgrade Link v1.2.9 to v1.2.24
+
+Please check [manual](./upgrade-link-v1.2.9-v1.2.24)
