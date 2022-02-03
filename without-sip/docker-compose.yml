@@ -9,7 +9,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   app:
-    image: basip/link-app
+    image: basip/link-app:latest
     container_name: link-app
     restart: always
     ports:
@@ -17,7 +17,7 @@ services:
       - "6001:6001/tcp"
     depends_on:
       - redis
-      - nats
+      - broker
       - db
     networks:
       - link-internal
@@ -45,21 +45,6 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "5"
-  nats:
-    image: nats:2.2.6-alpine3.13
-    container_name: link-nats
-    restart: always
-    ports:
-      - "4222:4222/tcp"
-      - "6222:6222/tcp"
-      - "8222:8222/tcp"
-    networks:
-      - link-internal
     logging:
       driver: json-file
       options:
@@ -97,8 +82,26 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-
-
+  broker:
+    image: basip/link-broker:latest
+    restart: always
+    container_name: link-broker
+    ports:
+      - "61617:61617" #STOMP+SSL
+      - "8161:8161"  #UI
+      - "5672:5672"  #AMQP
+      - "61613:61613" #STOMP
+      - "1883:1883"  #MQTT
+      - "61614:61614" #WS
+      - "1884:1884"  #MQTT+SSL
+    volumes:
+      - broker-data:/opt/activemq/data
+      - broker-app:/root/control-service/assets
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
 networks:
   link-internal:
     internal: true
@@ -107,4 +110,6 @@ volumes:
   app-data: { external: true }
   system-logs: { external: true }
   app-storage: { external: true }
+  broker-data: { external: true }
+  broker-app: { }
 
