@@ -107,7 +107,10 @@ http {
 
     # Prevent Nginx from leaking other server configurations on the same machine
     server {
-        listen      80 default_server;
+# BAS-IP LINK CHANGED: 80 port listening is configured in ssl conf, because we need give access by ip address
+#        listen      80 default_server;
+# BAS-IP LINK CHANGED: -
+
         listen      443 ssl default_server;
 
         ssl_certificate <%= NAConfig.portal_base_dir %>/default_server/default_server.crt;
