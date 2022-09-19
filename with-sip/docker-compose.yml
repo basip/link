@@ -112,6 +112,7 @@ services:
     volumes:
       - device-broker-settings:/mosquitto/config
       - device-broker-log:/var/log/supervisor
+      - device-broker-app:/root/control-service/assets
     logging:
       driver: json-file
       options:
@@ -189,3 +190,4 @@ volumes:
   sip-proxy-log: {}
   device-broker-log: { }
   device-broker-settings: { }
+  device-broker-app: { }
