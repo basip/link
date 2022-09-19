@@ -140,6 +140,7 @@ services:
       - app-ssl-certs:/certs
       - device-broker-settings:/mosquitto/config
       - device-broker-log:/var/log/supervisor
+      - device-broker-app:/root/control-service/assets
     logging:
       driver: json-file
       options:
@@ -156,3 +157,4 @@ volumes:
   app-ssl-certs: { external: true }
   device-broker-log: { }
   device-broker-settings: { }
+  device-broker-app: { }
