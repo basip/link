@@ -9,7 +9,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   app:
-    image: basip/link-app:latest
+    image: basip/link-app:${IMAGE:-latest}
     container_name: link-app
     restart: always
     ports:
@@ -72,7 +72,7 @@ services:
         max-file: "5"
     command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--innodb-buffer-pool-size=2G", "--innodb-log-file-size=256M"]
   face-app:
-    image: basip/link-face-app:latest
+    image: basip/link-face-app:${IMAGE:-latest}
     container_name: link-face-app
     restart: always
     ports:
@@ -85,7 +85,7 @@ services:
         max-size: "10m"
         max-file: "5"
   link-app-broker:
-    image: basip/link-app-broker:latest
+    image: basip/link-app-broker:${IMAGE:-latest}
     restart: always
     container_name: link-app-broker
     ports:
@@ -98,7 +98,7 @@ services:
         max-size: "10m"
         max-file: "5"
   link-device-broker:
-    image: basip/link-device-broker:latest
+    image: basip/link-device-broker:${IMAGE:-latest}
     restart: always
     container_name: link-device-broker
     environment:
