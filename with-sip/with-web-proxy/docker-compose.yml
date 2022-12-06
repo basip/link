@@ -207,7 +207,7 @@ services:
       - NET_ADMIN
       - NET_RAW
     network_mode: host
-    image: basip/fail2ban-service:${IMAGE:-latest}
+    image: basip/link-fail2ban-service:${IMAGE:-latest}
     container_name: link-fail2ban-service
     environment:
       - LISTEN_PORT=48084
