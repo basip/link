@@ -220,7 +220,6 @@ services:
       - shared-secrets:/shared-secrets:ro
       - sip-proxy-log:/kamailio-logs
       - fail2ban-service-assets:/root/control-service/assets
-      - fail2ban-service-data:/var/lib/fail2ban
 
 networks:
   link-internal:
@@ -240,4 +239,3 @@ volumes:
   sip-proxy-log: { }
   shared-secrets: { }
   fail2ban-service-assets: { }
-  fail2ban-service-data: { }
