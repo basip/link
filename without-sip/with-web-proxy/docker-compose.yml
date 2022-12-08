@@ -28,14 +28,6 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-  autoheal:
-    restart: always
-    container_name: link-autoheal
-    image: willfarrell/autoheal
-    environment:
-      - AUTOHEAL_CONTAINER_LABEL=all
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
   app:
     image: basip/link-app:${IMAGE:-latest}
     container_name: link-app
@@ -68,8 +60,6 @@ services:
       - "6379:6379/tcp"
     networks:
       - link-internal
-    depends_on:
-      - autoheal
     healthcheck:
       test: redis-cli -e PING || exit 1
       interval: 10s
