@@ -153,7 +153,7 @@ services:
     restart: always
     network_mode: host
     depends_on:
-      - sip-proxy-db
+      - sip-proxy-storage
     environment:
       - LISTEN_PORT=48080
       - KAMAILIO_CONFIG_PATH=/usr/local/etc/kamailio
