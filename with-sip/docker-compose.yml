@@ -119,18 +119,14 @@ services:
     restart: always
     network_mode: host
     depends_on:
-      - sip-proxy-db
+      - sip-proxy-storage
     environment:
       - LISTEN_PORT=48080
-      - DB_USER=root
-      - DB_PASSWORD=2TeEcbpdTXx2HrGVHgji3iqJ
-      - DB_HOST=127.0.0.1
-      - DB_PORT=43306
-      - DB_NAME=kamailio
       - KAMAILIO_CONFIG_PATH=/usr/local/etc/kamailio
       - APP_ASSETS_PATH=/root/control-service/assets
       - ARI_CONFIG_PATH=/usr/local/etc/ari-service
       - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
+      - REDIS_HOST=127.0.0.1:6380
     volumes:
       - sip-proxy-app:/root/control-service/assets
       - sip-proxy-log:/var/log
@@ -158,23 +154,24 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-  sip-proxy-db:
-    image: mysql:5.7.34
-    container_name: sip-proxy-db
+  sip-proxy-storage:
+    image: redis:6.2.4-alpine3.13
+    container_name: sip-proxy-storage
     restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=2TeEcbpdTXx2HrGVHgji3iqJ
-      - MYSQL_DATABASE=kamailio
-    volumes:
-      - sip-proxy-data:/var/lib/mysql
     ports:
-      - "43306:3306/tcp"
+      - "127.0.0.1:6380:6379/tcp"
+    healthcheck:
+      test: redis-cli -e PING || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - sip-proxy-storage:/data
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "5"
-    command: [ "--innodb-buffer-pool-size=2G", "--innodb-log-file-size=256M" ]
   fail2ban:
     cap_add:
       - NET_ADMIN
@@ -202,10 +199,10 @@ volumes:
   app-data: { external: true }
   system-logs: { external: true }
   app-storage: { external: true }
-  sip-proxy-data: { }
   sip-node-app: { }
   sip-proxy-app: { }
   sip-proxy-log: { }
+  sip-proxy-storage: { }
   device-broker-log: { }
   device-broker-settings: { }
   device-broker-app: { }
