@@ -4,6 +4,8 @@ services:
     image: basip/link-app:${IMAGE:-latest}
     container_name: link-app
     restart: always
+    environment:
+      - SHARED_SECRETS_PATH=/shared-secrets
     ports:
       - "80:8000/tcp"
       - "6001:6001/tcp"
@@ -25,6 +27,7 @@ services:
       - system-logs:/var/log
       - device-broker-log:/var/log/device-broker:ro
       - sip-proxy-log:/var/log/sip-proxy:ro
+      - shared-secrets:/shared-secrets
   redis:
     image: redis:6.2.4-alpine3.13
     container_name: link-redis
@@ -96,6 +99,7 @@ services:
       - LISTEN_PORT=48083
       - MOSQUITTO_CONFIG_PATH=/mosquitto/config
       - APP_ASSETS_PATH=/root/control-service/assets
+      - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
     ports:
       - "1883:1883"  #MQTT
       - "8883:8893" #MQTTS
@@ -103,6 +107,7 @@ services:
       - device-broker-settings:/mosquitto/config
       - device-broker-log:/var/log/supervisor
       - device-broker-app:/root/control-service/assets
+      - shared-secrets:/shared-secrets:ro
     logging:
       driver: json-file
       options:
@@ -120,10 +125,12 @@ services:
       - KAMAILIO_CONFIG_PATH=/usr/local/etc/kamailio
       - APP_ASSETS_PATH=/root/control-service/assets
       - ARI_CONFIG_PATH=/usr/local/etc/ari-service
+      - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
       - REDIS_HOST=127.0.0.1:6380
     volumes:
       - sip-proxy-app:/root/control-service/assets
       - sip-proxy-log:/var/log
+      - shared-secrets:/shared-secrets:ro
     logging:
       driver: json-file
       options:
@@ -138,8 +145,10 @@ services:
       - LISTEN_PORT=48081
       - ASTERISK_CONFIG_PATH=/etc/asterisk
       - APP_ASSETS_PATH=/root/control-service/assets
+      - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
     volumes:
       - sip-node-app:/root/control-service/assets
+      - shared-secrets:/shared-secrets:ro
     logging:
       driver: json-file
       options:
@@ -163,6 +172,24 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
+  fail2ban:
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    network_mode: host
+    image: basip/link-fail2ban-service:${IMAGE:-latest}
+    container_name: link-fail2ban-service
+    environment:
+      - LISTEN_PORT=48084
+      - APP_ASSETS_PATH=/root/control-service/assets
+      - KAMAILIO_ENABLED=true
+      - KAMAILIO_PORTS=5060,5061
+      - KAMAILIO_LOG_FILE=/kamailio-logs/kamailio.log
+      - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
+    volumes:
+      - shared-secrets:/shared-secrets:ro
+      - sip-proxy-log:/kamailio-logs
+      - fail2ban-service-assets:/root/control-service/assets
 
 networks:
   link-internal:
@@ -179,3 +206,5 @@ volumes:
   device-broker-log: { }
   device-broker-settings: { }
   device-broker-app: { }
+  shared-secrets: { }
+  fail2ban-service-assets: { }
