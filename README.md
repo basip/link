@@ -5,7 +5,7 @@ Link software offers a centralized access control dashboard allowing you to conn
 
 ### Link up and deploy scripts
 
-For Link manuals please visit [our wiki](https://wiki.bas-ip.com/basiplink/ru/bas-ip-link-2753556.html).
+For Link manuals please visit [our wiki]([https://wiki.bas-ip.com/basiplink/ru/bas-ip-link-2753556.html](https://wiki.bas-ip.com/basiplinken)).
 
 ### Starting Link
 1. Create environment file `cp .env.example .env`
