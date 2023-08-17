@@ -138,6 +138,21 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
+  trace-collector:
+    image: basip/link-log-trace-collector:${IMAGE:-latest}
+    container_name: link-log-trace-collector
+    restart: always
+    depends_on:
+      - redis
+    networks:
+      - link-internal
+      - default
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
 networks:
   link-internal:
     internal: true
