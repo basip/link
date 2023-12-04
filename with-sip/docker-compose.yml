@@ -83,9 +83,7 @@ services:
     restart: always
     container_name: link-app-broker
     ports:
-      - "1893:1893" #MQTT
-    networks:
-      - link-internal
+      - "127.0.0.1:1893:1893" #MQTT
     logging:
       driver: json-file
       options:
