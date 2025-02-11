@@ -4,11 +4,12 @@ services:
     image: basip/link-app:${IMAGE:-latest}
     container_name: link-app
     restart: always
+    env_file:
+      - ".env"
     environment:
       - SHARED_SECRETS_PATH=/shared-secrets
     ports:
       - "80:8000/tcp"
-      - "6001:6001/tcp"
     depends_on:
       - redis
       - link-app-broker

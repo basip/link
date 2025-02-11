@@ -1,25 +1,16 @@
 version: "3.2"
 services:
   https-portal:
-    image: steveltn/https-portal:1
+    image: basip/link-web-proxy:${IMAGE:-latest}
     container_name: link-web-proxy
     ports:
       - "80:80"
       - "443:443"
     restart: always
     environment:
-      STAGE: $HTTPS_MODE
-      PROXY_READ_TIMEOUT: 3600
-      DOMAINS: "$HTTPS_DOMAIN -> http://app:8000"
-      CLIENT_MAX_BODY_SIZE: "500M"
-      WEBSOCKET: "true"
-      WORKER_PROCESSES: 4
-      WORKER_CONNECTIONS: 8192
+      DOMAINS: "$HTTPS_DOMAIN[issue_mode=$HTTPS_MODE,proxy_to=http://app:8000]"
     volumes:
       - app-ssl-certs:/var/lib/https-portal
-      - ./web.conf/default.conf.erb:/var/lib/nginx-conf/$HTTPS_DOMAIN.conf.erb
-      - ./web.conf/default.ssl.conf.erb:/var/lib/nginx-conf/$HTTPS_DOMAIN.ssl.conf.erb
-      - ./web.conf/nginx.conf.erb:/var/lib/nginx-conf/nginx.conf.erb
     logging:
       driver: json-file
       options:
@@ -29,11 +20,12 @@ services:
     image: basip/link-app:${IMAGE:-latest}
     container_name: link-app
     restart: always
+    env_file:
+      - ".env"
     environment:
       - SHARED_SECRETS_PATH=/shared-secrets
     ports:
       - "8000:8000/tcp"
-      - "6001:6001/tcp"
     depends_on:
       - redis
       - link-app-broker
