@@ -9,7 +9,7 @@ For Link manuals please visit [our wiki]([https://wiki.bas-ip.com/basiplink/ru/b
 
 ### Starting Link
 1. Create environment file `cp .env.example .env`
-2. Set variables in the .env (please check [https-portal docs](https://hub.docker.com/r/steveltn/https-portal/) for additional information)
+2. Set variables in the .env (HTTPS_MODE=(production|staging) - certificate issue mode)
 3. Create volumes 
 ```bash
 docker volume create app-data
