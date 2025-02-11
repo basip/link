@@ -50,6 +50,8 @@ services:
     restart: always
     ports:
       - "6379:6379/tcp"
+    sysctls:
+      - net.core.somaxconn=65535
     networks:
       - link-internal
     healthcheck:

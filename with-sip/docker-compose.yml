@@ -37,6 +37,8 @@ services:
       - "6379:6379/tcp"
     networks:
       - link-internal
+    sysctls:
+      - net.core.somaxconn=65535
     healthcheck:
       test: redis-cli -e PING || exit 1
       interval: 10s
@@ -159,6 +161,8 @@ services:
     restart: always
     ports:
       - "127.0.0.1:6380:6379/tcp"
+    sysctls:
+      - net.core.somaxconn=65535
     healthcheck:
       test: redis-cli -e PING || exit 1
       interval: 10s
