@@ -1,6 +1,6 @@
 version: "3.2"
 services:
-  https-portal:
+  web-proxy:
     image: basip/link-web-proxy:${IMAGE:-latest}
     container_name: link-web-proxy
     ports:
