@@ -189,6 +189,12 @@ services:
       - KAMAILIO_PORTS=5060,5061
       - KAMAILIO_LOG_FILE=/kamailio-logs/kamailio.log
       - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
+      - KAMAILIO_MAXRETRY=${KAMAILIO_MAXRETRY:-14}
+      - KAMAILIO_FINDTIME=${KAMAILIO_FINDTIME:-3600}
+      - KAMAILIO_BANTIME=${KAMAILIO_BANTIME:-7200}
+      - KAMAILIO_MAXRETRY_TRUSTED=${KAMAILIO_MAXRETRY_TRUSTED:-3600}
+      - KAMAILIO_FINDTIME_TRUSTED=${KAMAILIO_FINDTIME_TRUSTED:-3600}
+      - KAMAILIO_BANTIME_TRUSTED=${KAMAILIO_BANTIME_TRUSTED:-7200}
     volumes:
       - shared-secrets:/shared-secrets:ro
       - sip-proxy-log:/kamailio-logs
