@@ -117,6 +117,8 @@ services:
     image: basip/link-log-trace-collector:${IMAGE:-latest}
     container_name: link-log-trace-collector
     restart: always
+    env_file:
+      - ".env"
     depends_on:
       - redis
     networks:
