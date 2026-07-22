@@ -1,4 +1,3 @@
-version: "3.2"
 services:
   app:
     image: basip/link-app:${IMAGE:-latest}
@@ -13,7 +12,6 @@ services:
     depends_on:
       - redis
       - link-app-broker
-      - link-device-broker
       - db
     networks:
       - link-internal
@@ -97,7 +95,8 @@ services:
     restart: always
     container_name: link-device-broker
     depends_on:
-      - link-device-broker-storage    
+      - link-device-broker-storage
+      - app
     environment:
       - LISTEN_PORT=48083
       - MOSQUITTO_CONFIG_PATH=/mosquitto/config
@@ -121,6 +120,18 @@ services:
     networks:
       - link-internal
       - default
+    command:
+      - /bin/sh
+      - -c
+      - |
+        echo "Waiting for app..."
+        until curl -fsS http://app:8000/api/v0/info >/dev/null; do
+          echo "App is not ready"
+          sleep 3
+        done
+
+        echo "App is ready"
+        exec /usr/bin/supervisord -n -c /etc/supervisord.conf
   sip-proxy:
     image: basip/link-sip-proxy:${IMAGE:-latest}
     container_name: sip-proxy-app
