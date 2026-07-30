@@ -138,6 +138,8 @@ services:
     image: basip/link-sip-proxy:${IMAGE:-latest}
     container_name: sip-proxy-app
     restart: always
+    cap_add:
+      - NET_RAW
     network_mode: host
     depends_on:
       - sip-proxy-storage
@@ -162,6 +164,8 @@ services:
     container_name: sip-node-app
     network_mode: host
     restart: always
+    cap_add:
+      - NET_RAW
     environment:
       - LISTEN_PORT=48081
       - ASTERISK_CONFIG_PATH=/etc/asterisk

@@ -158,6 +158,8 @@ services:
     container_name: sip-proxy-app
     restart: always
     network_mode: host
+    cap_add:
+      - NET_RAW
     depends_on:
       - sip-proxy-storage
     environment:
@@ -181,6 +183,8 @@ services:
     image: basip/link-sip-node:${IMAGE:-latest}
     container_name: sip-node-app
     network_mode: host
+    cap_add:
+      - NET_RAW
     restart: always
     environment:
       - LISTEN_PORT=48081
