@@ -28,6 +28,7 @@ services:
       - system-logs:/var/log
       - device-broker-log:/var/log/device-broker:ro
       - sip-proxy-log:/var/log/sip-proxy:ro
+      - sip-node-log:/var/log/sip-node:ro
       - shared-secrets:/shared-secrets
   redis:
     image: redis:6.2.4-alpine3.13
@@ -174,6 +175,7 @@ services:
     volumes:
       - sip-node-app:/root/control-service/assets
       - shared-secrets:/shared-secrets:ro
+      - sip-node-log:/var/log
     logging:
       driver: json-file
       options:
@@ -271,6 +273,7 @@ volumes:
   system-logs: { external: true }
   app-storage: { external: true }
   sip-node-app: { }
+  sip-node-log: { }
   sip-proxy-app: { }
   sip-proxy-log: { }
   sip-proxy-storage: { }
