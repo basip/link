@@ -25,6 +25,8 @@ services:
       - ".env"
     environment:
       - SHARED_SECRETS_PATH=/shared-secrets
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "8000:8000/tcp"
     depends_on:
