@@ -7,6 +7,7 @@ services:
       - ".env"
     environment:
       - SHARED_SECRETS_PATH=/shared-secrets
+      - AUTH_TRUST_LINK_WEB_PROXY=false
     ports:
       - "80:8000/tcp"
     depends_on:
