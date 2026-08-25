@@ -33,8 +33,6 @@ services:
     image: redis:6.2.4-alpine3.13
     container_name: link-redis
     restart: always
-    ports:
-      - "6379:6379/tcp"
     networks:
       - link-internal
     sysctls:
@@ -58,8 +56,6 @@ services:
       - MYSQL_DATABASE=basip_link
     volumes:
       - app-data:/var/lib/mysql
-    ports:
-      - "3306:3306/tcp"
     networks:
       - link-internal
     logging:
@@ -72,8 +68,6 @@ services:
     image: basip/link-face-app:${IMAGE:-latest}
     container_name: link-face-app
     restart: always
-    ports:
-      - "8089:80/tcp"
     networks:
       - link-internal
     logging:
@@ -85,8 +79,8 @@ services:
     image: basip/link-app-broker:${IMAGE:-latest}
     restart: always
     container_name: link-app-broker
-    ports:
-      - "127.0.0.1:1893:1893" #MQTT
+    networks:
+      - link-internal
     logging:
       driver: json-file
       options:
@@ -108,7 +102,6 @@ services:
     ports:
       - "1883:1883/tcp"
       - "8883:8893/tcp"
-      - "48083:48083/tcp"
     volumes:
       - device-broker-settings:/mosquitto/config
       - device-broker-log:/var/log/supervisor
@@ -154,8 +147,6 @@ services:
     image: redis:6.2.4-alpine3.13
     container_name: link-device-broker-storage
     restart: always
-    ports:
-      - "127.0.0.1:6399:6379/tcp"
     sysctls:
       - net.core.somaxconn=65535
     healthcheck:
