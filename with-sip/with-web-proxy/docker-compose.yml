@@ -27,6 +27,8 @@ services:
     environment:
       - SHARED_SECRETS_PATH=/shared-secrets
       - AUTH_TRUST_LINK_WEB_PROXY=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - redis
       - link-app-broker
