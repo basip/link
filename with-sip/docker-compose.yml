@@ -142,6 +142,8 @@ services:
     cap_add:
       - NET_RAW
     network_mode: host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - sip-proxy-storage
     environment:
@@ -151,6 +153,7 @@ services:
       - ARI_CONFIG_PATH=/usr/local/etc/ari-service
       - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
       - REDIS_HOST=127.0.0.1:6380
+      - INTERNAL_SERVICES_HOST=host.docker.internal
     volumes:
       - sip-proxy-app:/root/control-service/assets
       - sip-proxy-log:/var/log
@@ -164,6 +167,8 @@ services:
     image: basip/link-sip-node:${IMAGE:-latest}
     container_name: sip-node-app
     network_mode: host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: always
     cap_add:
       - NET_RAW
@@ -172,6 +177,7 @@ services:
       - ASTERISK_CONFIG_PATH=/etc/asterisk
       - APP_ASSETS_PATH=/root/control-service/assets
       - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
+      - INTERNAL_SERVICES_HOST=host.docker.internal
     volumes:
       - sip-node-app:/root/control-service/assets
       - shared-secrets:/shared-secrets:ro
@@ -206,6 +212,8 @@ services:
       - NET_ADMIN
       - NET_RAW
     network_mode: host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     image: basip/link-fail2ban-service:${IMAGE:-latest}
     container_name: link-fail2ban-service
     environment:
@@ -221,6 +229,7 @@ services:
       - KAMAILIO_MAXRETRY_TRUSTED=${KAMAILIO_MAXRETRY_TRUSTED:-3600}
       - KAMAILIO_FINDTIME_TRUSTED=${KAMAILIO_FINDTIME_TRUSTED:-3600}
       - KAMAILIO_BANTIME_TRUSTED=${KAMAILIO_BANTIME_TRUSTED:-7200}
+      - INTERNAL_SERVICES_HOST=host.docker.internal
     volumes:
       - shared-secrets:/shared-secrets:ro
       - sip-proxy-log:/kamailio-logs
