@@ -127,7 +127,6 @@ services:
     ports:
       - "1883:1883/tcp"
       - "8883:8893/tcp"
-      - "48083:48083/tcp"
     volumes:
       - app-ssl-certs:/certs
       - device-broker-settings:/mosquitto/config
