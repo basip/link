@@ -172,7 +172,7 @@ services:
       - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
       - REDIS_HOST=127.0.0.1:6380
       - INTERNAL_SERVICES_HOST=host.docker.internal
-      - CALL_CAPTURE_INTERFACE=lo
+      - CALL_CAPTURE_INTERFACE=${CALL_CAPTURE_PROXY_INTERFACE:-lo}
     volumes:
       - sip-proxy-app:/root/control-service/assets
       - sip-proxy-log:/var/log
@@ -198,6 +198,7 @@ services:
       - APP_ASSETS_PATH=/root/control-service/assets
       - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
       - INTERNAL_SERVICES_HOST=host.docker.internal
+      - CALL_CAPTURE_INTERFACE=${CALL_CAPTURE_INTERFACE:-eth0}
     volumes:
       - sip-node-app:/root/control-service/assets
       - shared-secrets:/shared-secrets:ro
