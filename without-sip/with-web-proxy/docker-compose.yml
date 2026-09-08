@@ -1,6 +1,6 @@
 services:
   web-proxy:
-    image: basip/link-web-proxy:${IMAGE:-latest}
+    image: ${IMAGE_REPO:-basip/}link-web-proxy:${IMAGE:-latest}
     container_name: link-web-proxy
     ports:
       - "80:80"
@@ -19,7 +19,7 @@ services:
         max-size: "10m"
         max-file: "5"
   app:
-    image: basip/link-app:${IMAGE:-latest}
+    image: ${IMAGE_REPO:-basip/}link-app:${IMAGE:-latest}
     container_name: link-app
     restart: always
     env_file:
@@ -82,7 +82,7 @@ services:
         max-file: "5"
     command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--innodb-buffer-pool-size=2G", "--innodb-log-file-size=256M"]
   face-app:
-    image: basip/link-face-app:${IMAGE:-latest}
+    image: ${IMAGE_REPO:-basip/}link-face-app:${IMAGE:-latest}
     container_name: link-face-app
     restart: always
     networks:
@@ -93,7 +93,7 @@ services:
         max-size: "10m"
         max-file: "5"
   link-app-broker:
-    image: basip/link-app-broker:${IMAGE:-latest}
+    image: ${IMAGE_REPO:-basip/}link-app-broker:${IMAGE:-latest}
     restart: always
     container_name: link-app-broker
     networks:
@@ -104,7 +104,7 @@ services:
         max-size: "10m"
         max-file: "5"
   link-device-broker:
-    image: basip/link-device-broker:${IMAGE:-latest}
+    image: ${IMAGE_REPO:-basip/}link-device-broker:${IMAGE:-latest}
     restart: always
     container_name: link-device-broker
     depends_on:
@@ -146,7 +146,7 @@ services:
         echo "App is ready"
         exec /usr/bin/supervisord -n -c /etc/supervisord.conf
   trace-collector:
-    image: basip/link-log-trace-collector:${IMAGE:-latest}
+    image: ${IMAGE_REPO:-basip/}link-log-trace-collector:${IMAGE:-latest}
     container_name: link-log-trace-collector
     restart: always
     env_file:
