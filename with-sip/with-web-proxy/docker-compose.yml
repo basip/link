@@ -233,6 +233,9 @@ services:
       - KAMAILIO_MAXRETRY_TRUSTED=${KAMAILIO_MAXRETRY_TRUSTED:-3600}
       - KAMAILIO_FINDTIME_TRUSTED=${KAMAILIO_FINDTIME_TRUSTED:-3600}
       - KAMAILIO_BANTIME_TRUSTED=${KAMAILIO_BANTIME_TRUSTED:-7200}
+      - REDIS_HOST=127.0.0.1:6380
+      - REDIS_DB=10
+      - IP_STATE_TTL_GRACE_SECONDS=300
     volumes:
       - shared-secrets:/shared-secrets:ro
       - sip-proxy-log:/kamailio-logs
