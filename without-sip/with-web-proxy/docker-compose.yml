@@ -1,6 +1,6 @@
 services:
   web-proxy:
-    image: basip/link-web-proxy:${IMAGE:-latest}
+    image: ${IMAGE_REPO:-basip/}link-web-proxy:${IMAGE:-latest}
     container_name: link-web-proxy
     ports:
       - "80:80"
@@ -12,23 +12,23 @@ services:
       DOMAINS: "$HTTPS_DOMAIN[issue_mode=$HTTPS_MODE,proxy_to=http://app:8000]"
     volumes:
       - app-ssl-certs:/certs
+      - web-proxy-logs:/var/log/nginx
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "5"
   app:
-    image: basip/link-app:${IMAGE:-latest}
+    image: ${IMAGE_REPO:-basip/}link-app:${IMAGE:-latest}
     container_name: link-app
     restart: always
     env_file:
       - ".env"
     environment:
       - SHARED_SECRETS_PATH=/shared-secrets
+      - AUTH_TRUST_LINK_WEB_PROXY=true
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    ports:
-      - "8000:8000/tcp"
     depends_on:
       - redis
       - link-app-broker
@@ -50,8 +50,6 @@ services:
     image: redis:6.2.4-alpine3.13
     container_name: link-redis
     restart: always
-    ports:
-      - "6379:6379/tcp"
     sysctls:
       - net.core.somaxconn=65535
     networks:
@@ -75,8 +73,6 @@ services:
       - MYSQL_DATABASE=basip_link
     volumes:
       - app-data:/var/lib/mysql
-    ports:
-      - "3306:3306/tcp"
     networks:
       - link-internal
     logging:
@@ -86,11 +82,9 @@ services:
         max-file: "5"
     command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--innodb-buffer-pool-size=2G", "--innodb-log-file-size=256M"]
   face-app:
-    image: basip/link-face-app:${IMAGE:-latest}
+    image: ${IMAGE_REPO:-basip/}link-face-app:${IMAGE:-latest}
     container_name: link-face-app
     restart: always
-    ports:
-      - "8089:80/tcp"
     networks:
       - link-internal
     logging:
@@ -99,18 +93,18 @@ services:
         max-size: "10m"
         max-file: "5"
   link-app-broker:
-    image: basip/link-app-broker:${IMAGE:-latest}
+    image: ${IMAGE_REPO:-basip/}link-app-broker:${IMAGE:-latest}
     restart: always
     container_name: link-app-broker
-    ports:
-      - "127.0.0.1:1893:1893" #MQTT
+    networks:
+      - link-internal
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "5"
   link-device-broker:
-    image: basip/link-device-broker:${IMAGE:-latest}
+    image: ${IMAGE_REPO:-basip/}link-device-broker:${IMAGE:-latest}
     restart: always
     container_name: link-device-broker
     depends_on:
@@ -125,7 +119,6 @@ services:
     ports:
       - "1883:1883/tcp"
       - "8883:8893/tcp"
-      - "48083:48083/tcp"
     volumes:
       - app-ssl-certs:/certs
       - device-broker-settings:/mosquitto/config
@@ -153,7 +146,7 @@ services:
         echo "App is ready"
         exec /usr/bin/supervisord -n -c /etc/supervisord.conf
   trace-collector:
-    image: basip/link-log-trace-collector:${IMAGE:-latest}
+    image: ${IMAGE_REPO:-basip/}link-log-trace-collector:${IMAGE:-latest}
     container_name: link-log-trace-collector
     restart: always
     env_file:
@@ -172,8 +165,6 @@ services:
     image: redis:6.2.4-alpine3.13
     container_name: link-device-broker-storage
     restart: always
-    ports:
-      - "127.0.0.1:6399:6379/tcp"
     sysctls:
       - net.core.somaxconn=65535
     healthcheck:
@@ -205,3 +196,4 @@ volumes:
   device-broker-app: { }
   shared-secrets: { }
   link-device-broker-storage: { }
+  web-proxy-logs: { }
