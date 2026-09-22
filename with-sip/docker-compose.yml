@@ -143,6 +143,10 @@ services:
     environment:
       - LISTEN_PORT=48080
       - KAMAILIO_CONFIG_PATH=/usr/local/etc/kamailio
+      - KAMAILIO_TCP_MAX_CONNECTIONS=${KAMAILIO_TCP_MAX_CONNECTIONS:-}
+      - KAMAILIO_TLS_MAX_CONNECTIONS=${KAMAILIO_TLS_MAX_CONNECTIONS:-}
+      - KAMAILIO_SHM_MEMORY_MB=${KAMAILIO_SHM_MEMORY_MB:-}
+      - KAMAILIO_PKG_MEMORY_MB=${KAMAILIO_PKG_MEMORY_MB:-}
       - APP_ASSETS_PATH=/root/control-service/assets
       - ARI_CONFIG_PATH=/usr/local/etc/ari-service
       - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
