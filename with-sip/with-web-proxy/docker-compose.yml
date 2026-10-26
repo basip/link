@@ -46,6 +46,7 @@ services:
       - system-logs:/var/log
       - device-broker-log:/var/log/device-broker:ro
       - sip-proxy-log:/var/log/sip-proxy:ro
+      - sip-node-log:/var/log/sip-node:ro
       - shared-secrets:/shared-secrets
   redis:
     image: redis:6.2.4-alpine3.13
@@ -153,6 +154,8 @@ services:
     network_mode: host
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    cap_add:
+      - NET_RAW
     depends_on:
       - sip-proxy-storage
     environment:
@@ -167,6 +170,7 @@ services:
       - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
       - REDIS_HOST=127.0.0.1:6380
       - INTERNAL_SERVICES_HOST=host.docker.internal
+      - CALL_CAPTURE_INTERFACE=${CALL_CAPTURE_PROXY_INTERFACE:-auto}
     volumes:
       - sip-proxy-app:/root/control-service/assets
       - sip-proxy-log:/var/log
@@ -183,6 +187,8 @@ services:
     network_mode: host
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    cap_add:
+      - NET_RAW
     restart: always
     environment:
       - LISTEN_PORT=48081
@@ -190,9 +196,11 @@ services:
       - APP_ASSETS_PATH=/root/control-service/assets
       - SHARED_SECRETS_PATH=/shared-secrets/secrets.env
       - INTERNAL_SERVICES_HOST=host.docker.internal
+      - CALL_CAPTURE_INTERFACE=${CALL_CAPTURE_INTERFACE:-auto}
     volumes:
       - sip-node-app:/root/control-service/assets
       - shared-secrets:/shared-secrets:ro
+      - sip-node-log:/var/log
     logging:
       driver: json-file
       options:
@@ -295,6 +303,7 @@ volumes:
   device-broker-settings: { }
   device-broker-app: { }
   sip-node-app: { }
+  sip-node-log: { }
   sip-proxy-app: { }
   sip-proxy-log: { }
   sip-proxy-storage: { }
